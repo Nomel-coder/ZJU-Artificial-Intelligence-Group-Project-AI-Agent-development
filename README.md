@@ -2,30 +2,30 @@ ZJU-Artificial-Intelligence-Group-Project-AI-Agent-development
 Collaborative Group Work  
 这是浙江大学人工智能基础A13组的开发任务，我们的分工如下：  
 
-孙晋荣（组长）：Agent主框架与项目统筹
-Agent整体架构设计
-LLM API接入与封装
-主循环控制逻辑实现
-项目集成与版本管理
-进度协调与答辩组织
+孙晋荣（组长）：Agent主框架与项目统筹  
+Agent整体架构设计  
+LLM API接入与封装  
+主循环控制逻辑实现  
+项目集成与版本管理  
+进度协调与答辩组织  
+ 
+姚文博：Prompt工程与决策策略  
+ReAct Prompt设计  
+工具调用格式设计  
+输出约束与错误恢复策略  
+Prompt调优实验  
+多轮推理测试  
 
-姚文博：Prompt工程与决策策略
-ReAct Prompt设计
-工具调用格式设计
-输出约束与错误恢复策略
-Prompt调优实验
-多轮推理测试
+杨中钦：工具模块开发   
+计算器工具实现   
+Wikipedia搜索工具实现  
+本地文件读写工具实现  
+工具统一接口封装  
+工具异常处理机制  
 
-杨中钦：工具模块开发
-计算器工具实现
-Wikipedia搜索工具实现
-本地文件读写工具实现
-工具统一接口封装
-工具异常处理机制
-
-林放：解析执行与记忆模块
-Action解析器开发
-Tool Router实现
+林放：解析执行与记忆模块  
+Action解析器开发  
+Tool Router实现  
 Observation结果回灌机制
 对话历史管理
 Context长度控制与记忆模块预研

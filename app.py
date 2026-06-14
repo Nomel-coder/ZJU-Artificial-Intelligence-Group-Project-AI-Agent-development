@@ -26,7 +26,7 @@ def predict(message, history, workspace_dir):
     agent.reset()
     trace_log = ""
     
-    # 初始化对话历史（适配Gradio 6.0+ 字典格式聊天记录）
+    # 初始化对话历史（适配Gradio 6.0+）
     chat_history = list(history) if history else []
     chat_history.append({"role": "user", "content": message})
     chat_history.append({"role": "assistant", "content": "思考中..."})
@@ -66,13 +66,13 @@ def predict(message, history, workspace_dir):
 
 # 自定义全局主题：深色轻奢风格，优化配色与字体
 theme = gr.themes.Soft(
-    primary_hue="amber",       # 主色调：琥珀色
-    secondary_hue="orange",    # 辅助色调：橙色，增强层次感
-    neutral_hue="slate",       # 中性色调：石板灰，适配深色模式
-    font=[gr.themes.GoogleFont("Outfit"), "Microsoft YaHei", "sans-serif"]  # 兼容中英文字体
+    primary_hue="amber",
+    secondary_hue="orange",
+    neutral_hue="slate",
+    font=[gr.themes.GoogleFont("Outfit"), "Microsoft YaHei", "sans-serif"]
 )
 
-# 全局CSS样式：升级玻璃拟态、分区样式、阴影、间距、配色
+# 全局CSS样式
 css = """
 /* 全局页面基础样式 */
 body, .gradio-container {
@@ -85,7 +85,7 @@ body, .gradio-container {
     padding: 0 20px !important;
 }
 
-/* 顶部标题栏样式 - 增强玻璃拟态+阴影 */
+/* 顶部标题栏样式 */
 .header {
     text-align: center;
     margin-bottom: 35px;
@@ -110,7 +110,7 @@ body, .gradio-container {
     letter-spacing: 1px;
 }
 
-/* 卡片通用样式：统一圆角、边框、玻璃效果、阴影 */
+/* 卡片通用样式 */
 .chatbot-wrap, .gr-box, .gr-panel, .gr-form, .chatbot, .textbox, .gr-markdown {
     border-radius: 18px !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -118,12 +118,6 @@ body, .gradio-container {
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
     transition: all 0.3s ease !important;
-}
-
-/* 卡片悬浮轻微动效 */
-.gr-box:hover, .gr-panel:hover {
-    border-color: rgba(251, 191, 36, 0.2) !important;
-    box-shadow: 0 6px 24px rgba(251, 191, 36, 0.1) !important;
 }
 
 /* 输入框样式优化 */
@@ -180,62 +174,51 @@ h3 {
 }
 """
 
-# 构建Gradio页面主体
-with gr.Blocks(title="ReAct AI Agent Framework Dashboard", theme=theme) as demo:
+# 构建Gradio页面主体（新版 Blocks 写法）
+with gr.Blocks(title="ReAct AI Agent Framework Dashboard") as demo:
     # 顶部标题模块
-    gr.HTML(
-        """
+    gr.HTML("""
         <div class="header">
             <h1>ReAct AI Agent Framework</h1>
             <p>基于 ReAct 范式的自主决策与工具调用闭环演示系统</p>
         </div>
-        """
-    )
+    """)
     
-    # 会话状态存储器：持久化聊天历史
+    # 会话状态存储器
     history_state = gr.State([])
     
     # 工作目录配置行
     with gr.Row():
         workspace_input = gr.Textbox(
-            label="📂 当前工作目录 (Working Directory)",
+            label="📂 当前工作目录",
             value=os.path.abspath(os.path.dirname(__file__)),
-            placeholder="请输入工作目录路径，Agent 的文件读写操作将在此目录下进行",
+            placeholder="请输入工作目录路径",
             scale=1
         )
         
-    # 主体内容分区：左侧对话区，右侧轨迹日志区
+    # 主体内容分区
     with gr.Row():
         # 左侧：对话交互区域
         with gr.Column(scale=3):
             gr.Markdown("### 💬 交互对话")
-            chatbot = gr.Chatbot(
-                label="与 Agent 对话", 
-                height=520, 
-                show_label=False,
-                bubble_full_width=False  # 气泡不占满整行，更美观
-            )
+            # 移除 bubble_full_width，适配新版
+            chatbot = gr.Chatbot(label="与 Agent 对话", height=520, show_label=False)
             msg = gr.Textbox(
                 label="✍️ 输入您的问题",
                 placeholder="例如：计算圆周率 3.14159 乘以半径 10 的平方，并将结果写入 area.txt 文件中",
                 lines=2,
                 max_lines=4
             )
-            # 功能按钮行
             with gr.Row():
                 submit_btn = gr.Button("发送", variant="primary", scale=2)
                 clear_btn = gr.Button("清空历史", variant="secondary", scale=1)
                 
         # 右侧：ReAct执行轨迹展示区
         with gr.Column(scale=2):
-            gr.Markdown("### 📜 ReAct 运行轨迹 (Reasoning & Tools Trace)")
-            trace_view = gr.Markdown(
-                value="等待提问以显示运行轨迹...",
-                height=520
-            )
+            gr.Markdown("### 📜 ReAct 运行轨迹")
+            trace_view = gr.Markdown(value="等待提问以显示运行轨迹...", height=520)
             
     # ========== 事件绑定逻辑 ==========
-    # 点击发送按钮触发对话推理
     submit_event = submit_btn.click(
         predict, 
         inputs=[msg, history_state, workspace_input], 
@@ -243,52 +226,33 @@ with gr.Blocks(title="ReAct AI Agent Framework Dashboard", theme=theme) as demo:
     )
     
     # 发送后清空输入框
-    submit_event.then(
-        fn=lambda: "",
-        inputs=None,
-        outputs=msg
-    )
+    submit_event.then(lambda: "", inputs=None, outputs=msg)
     
-    # 同步更新全局会话历史
-    submit_event.then(
-        fn=lambda chat_history: chat_history,
-        inputs=[chatbot],
-        outputs=[history_state]
-    )
-    
-    # 输入框回车提交逻辑
+    # 同步更新历史
+    submit_event.then(lambda h: h, inputs=[chatbot], outputs=[history_state])
+
+    # 回车提交
     submit_event_textbox = msg.submit(
         predict,
         inputs=[msg, history_state, workspace_input],
         outputs=[chatbot, trace_view]
     )
-    submit_event_textbox.then(
-        fn=lambda: "",
-        inputs=None,
-        outputs=msg
-    ).then(
-        fn=lambda chat_history: chat_history,
-        inputs=[chatbot],
-        outputs=[history_state]
+    submit_event_textbox.then(lambda: "", inputs=None, outputs=msg).then(
+        lambda h: h, inputs=[chatbot], outputs=[history_state]
     )
 
-    # 清空按钮逻辑：重置对话、历史、轨迹日志
+    # 清空按钮
     def clear_all():
-        """清空所有会话内容与轨迹日志"""
         return [], [], "等待提问以显示运行轨迹..."
 
-    clear_btn.click(
-        fn=clear_all,
-        inputs=None,
-        outputs=[chatbot, history_state, trace_view]
-    )
+    clear_btn.click(fn=clear_all, inputs=None, outputs=[chatbot, history_state, trace_view])
 
-# 启动Web服务
+# 启动Web服务（新版 Gradio 只在这里加载 theme + css）
 if __name__ == "__main__":
     demo.launch(
         server_name="127.0.0.1", 
         server_port=7860, 
         theme=theme, 
         css=css,
-        inbrowser=True  # 自动打开浏览器
+        inbrowser=True
     )

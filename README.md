@@ -154,7 +154,8 @@ python -m unittest discover -s tests -v
 
 ---
 
-## 🔬 林放模块亮点
+<details>
+<summary><b>🔬 林放模块亮点</b>（点击展开）</summary>
 
 ### 多策略解析器 (`parser.py`)
 
@@ -182,6 +183,8 @@ python -m unittest discover -s tests -v
 
 - 抽取式压缩：最近 N 轮完整保留，旧轮压缩为一行摘要
 - 可选 LLM 深度摘要（上下文使用率 > 90% 时触发）
+
+</details>
 
 ---
 
